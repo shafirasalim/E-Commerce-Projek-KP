@@ -22,10 +22,9 @@ class Product extends Model
     ];
 
     protected $casts=[
-        'price' => 'decimal:2'
     ];
 
-    public function cetegory() : BelongsTo
+    public function category() : BelongsTo
     {
         return $this-> belongsTo(Category::class);
     }
