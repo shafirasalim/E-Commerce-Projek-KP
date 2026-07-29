@@ -10,7 +10,7 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::latest()->paginate(15);
+        $categories = Category::with('products')->latest()->paginate(10);
         return view('admin.categories.index', compact('categories'));
     }
 
@@ -22,13 +22,20 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'name' => 'required|string|max:255|unique:categories,name',
+            'description' => 'nullable|string|max:1000',
         ]);
 
         Category::create($validated);
 
-        return redirect()->route('admin.categories.index')->with('success', 'Kategori berhasil ditambahkan!');
+        return redirect()->route('admin.categories.index')
+            ->with('success', 'Kategori berhasil ditambahkan!');
+    }
+
+    public function show(Category $category)
+    {
+        $category->load('products');
+        return view('admin.categories.show', compact('category'));
     }
 
     public function edit(Category $category)
@@ -39,18 +46,21 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
+            'description' => 'nullable|string|max:1000',
         ]);
 
         $category->update($validated);
 
-        return redirect()->route('admin.categories.index')->with('success', 'Kategori berhasil diupdate!');
+        return redirect()->route('admin.categories.index')
+            ->with('success', 'Kategori berhasil diupdate!');
     }
 
     public function destroy(Category $category)
     {
         $category->delete();
-        return redirect()->route('admin.categories.index')->with('success', 'Kategori berhasil dihapus!');
+
+        return redirect()->route('admin.categories.index')
+            ->with('success', 'Kategori berhasil dihapus!');
     }
 }

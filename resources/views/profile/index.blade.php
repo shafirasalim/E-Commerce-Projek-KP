@@ -1,6 +1,6 @@
 <x-public-layout title="Beranda - Toko Online">
     
-    <!-- 1. BANNER AREA (Slider Simulasi) -->
+    <!-- BANNER AREA (Slider Simulasi) -->
     <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-4">
         <div class="relative w-full h-40 sm:h-64 rounded-xl overflow-hidden shadow-sm group">
             <!-- Gambar Banner -->
@@ -16,7 +16,7 @@
         </div>
     </div>
 
-    <!-- 2. KATEGORI (Horizontal Scroll ala Shopee) -->
+    <!-- KATEGORI (Horizontal Scroll ala Shopee) -->
     <div class="bg-white py-6 shadow-sm mb-4">
         <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between mb-4 px-2">
@@ -44,7 +44,7 @@
         </div>
     </div>
 
-    <!-- 3. PRODUK TERBARU / REKOMENDASI -->
+    <!-- PRODUK TERBARU / REKOMENDASI -->
     <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-6">
         <div class="sticky top-16 z-40 bg-white pb-2 border-b mb-4">
             <h2 class="text-lg font-bold text-gray-800 py-2">REKOMENDASI</h2>

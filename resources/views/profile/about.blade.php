@@ -72,19 +72,17 @@
                     <h2 class="text-3xl font-bold text-gray-900 mb-6">Sejarah Cianjur Fresh</h2>
                     <div class="space-y-4 text-gray-600 leading-relaxed">
                         <p>
-                            Cianjur Fresh bermula dari kecintaan kami terhadap potensi pertanian Cianjur, 
-                            khususnya buah markisa yang memiliki kualitas luar biasa. Berdiri sejak tahun 2024, 
-                            kami melihat bahwa banyak petani markisa lokal kesulitan memasarkan hasil panen mereka 
-                            dengan harga yang layak.
+                            UMKM Cianjur Fresh merupakan usaha mikro, kecil, dan menengah yang berdiri pada tahun 2019 di Desa Babakancaringin, Kecamatan Karangtengah, Kabupaten Cianjur. 
+                            UMKM ini memproduksi minuman berbahan dasar buah markisa dengan merek Hachi Pashi Flora, menggunakan bahan baku dari kebun sendiri dan petani lokal.
                         </p>
                         <p>
-                            Melalui platform e-commerce ini, kami ingin menjembatani petani lokal dengan konsumen 
-                            yang menginginkan produk segar dan berkualitas. Kami fokus pada pengembangan produk 
-                            markisa Cianjur yang dikenal memiliki rasa manis alami dengan aroma khas yang menggugah selera.
+                            Produk dibuat dengan pengawet alami berupa gula sehingga lebih aman dikonsumsi dan mendukung gaya hidup sehat. 
+                            Cianjur Fresh bertujuan meningkatkan daya saing UMKM lokal, bersaing dengan produk minuman di pasaran, 
+                            serta mendukung ketahanan pangan melalui pemanfaatan bahan baku lokal yang berkelanjutan.
                         </p>
                         <p>
-                            Hingga kini, Cianjur Fresh telah bekerja sama dengan puluhan petani markisa di wilayah 
-                            Cianjur dan berhasil menjangkau ratusan pelanggan yang mencintai produk lokal berkualitas.
+                            Pemasaran dilakukan secara hybrid, yaitu melalui marketplace seperti Shopee, media sosial, dan penjualan langsung dari mulut ke mulut. 
+                            Sementara itu, pencatatan operasional masih menggunakan Microsoft Excel dan metode konvensional.
                         </p>
                     </div>
                 </div>
@@ -111,9 +109,9 @@
                     </div>
                     <h3 class="text-2xl font-bold text-gray-900 mb-4">Visi</h3>
                     <p class="text-gray-600 leading-relaxed">
-                        Menjadi platform e-commerce terdepan yang mengangkat potensi produk lokal Cianjur, 
-                        khususnya markisa, ke pasar yang lebih luas sambil memberdayakan petani lokal dan 
-                        menjaga kualitas produk terbaik.
+                        Menjadi produsen minuman alami berbasis produk lokal yang berkualitas tinggi, 
+                        berdaya saing, serta berkontribusi dalam menghadirkan alternatif produk melalui 
+                        penerapan prinsip pertanian berkelanjutan.
                     </p>
                 </div>
 
@@ -130,25 +128,19 @@
                             <svg class="w-5 h-5 text-brand-600 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                             </svg>
-                            <span>Memasarkan produk markisa Cianjur berkualitas tinggi</span>
+                            <span>Memproduksi minuman sehat berbahan alami dengan kualitas konsisten.</span>
                         </li>
                         <li class="flex items-start">
                             <svg class="w-5 h-5 text-brand-600 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                             </svg>
-                            <span>Memberdayakan petani lokal dengan harga yang adil</span>
+                            <span>Mengembangkan inovasi produk berbasis kebutuhan konsumen.</span>
                         </li>
                         <li class="flex items-start">
                             <svg class="w-5 h-5 text-brand-600 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                             </svg>
-                            <span>Menjaga kesegaran produk dari kebun ke konsumen</span>
-                        </li>
-                        <li class="flex items-start">
-                            <svg class="w-5 h-5 text-brand-600 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                            </svg>
-                            <span>Memberikan pelayanan terbaik dengan sistem e-commerce modern</span>
+                            <span>Menerapkan pertanian berkelanjutan dan teknologi digital untuk memperluas pasar.</span>
                         </li>
                     </ul>
                 </div>

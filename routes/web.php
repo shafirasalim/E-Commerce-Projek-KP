@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\CartController;
-use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
@@ -10,7 +9,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-// 1. WEB PROFIL 
+// =================================================================
+// 0. WEBHOOK MIDTRANS (WAJIB DI LUAR MIDDLEWARE 'auth'!)
+// =================================================================
+// Midtrans mengirim POST request tanpa session cookie Laravel.
+// Jika ada middleware 'auth', webhook akan ditolak (redirect ke login).
+Route::post('/midtrans/notification', [PaymentController::class, 'notification'])->name('midtrans.notification');
+
+
+// =================================================================
+// 1. WEB PROFIL (PUBLIK)
+// =================================================================
 Route::get('/', function () {
     $categories = \App\Models\Category::latest()->get();
     $products = \App\Models\Product::where('status', 'active')->latest()->take(12)->get();
@@ -21,7 +30,10 @@ Route::get('/about', function () {
     return view('profile.about');
 })->name('about');
 
-// 2. E-COMMERCE KATALOG (PUBLIK)
+
+// =================================================================
+// 2. E-COMMERCE KATALOG & CART (PUBLIK)
+// =================================================================
 Route::get('/shop', [ProductController::class, 'publicIndex'])->name('shop.index');
 Route::get('/shop/{product}', [ProductController::class, 'publicShow'])->name('shop.show');
 
@@ -31,7 +43,10 @@ Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 Route::post('/cart/update/{itemId}', [CartController::class, 'update'])->name('cart.update');
 Route::post('/cart/remove/{itemId}', [CartController::class, 'remove'])->name('cart.remove');
 
-// 3. AREA WAJIB LOGIN
+
+// =================================================================
+// 3. AREA WAJIB LOGIN (USER)
+// =================================================================
 Route::middleware(['auth'])->group(function () {
     
     // Dashboard redirect ke home
@@ -44,23 +59,21 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/apply-supplier', [SupplierApplicationController::class, 'store'])->name('supplier.store');
 
     // Profile Management
-    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
-    Route::put('/password', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('password.update');
+    Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/password', [\App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('password.update');
     
     // Checkout
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
     Route::get('/buy-now/{productId}', [CheckoutController::class, 'buyNow'])->name('checkout.buy_now');
 
-    // Payment Routes - LANGSUNG REDIRECT KE MIDTRANS!
+    // Payment Routes
     Route::get('/payment/{transactionId}', [PaymentController::class, 'redirectToMidtrans'])->name('payment.redirect');
     Route::get('/payment/{transactionId}/success', [PaymentController::class, 'success'])->name('payment.success');
+    Route::get('/payment/{transactionId}/unfinish', [PaymentController::class, 'unfinish'])->name('payment.unfinish'); // Tambahan buat handle batal
 
-    // Midtrans Notification (Webhook)
-    Route::post('/midtrans/notification', [PaymentController::class, 'notification'])->name('midtrans.notification');
-
-    // Pesanan Saya
+    // Pesanan Saya (User)
     Route::get('/my-orders', function (Request $request) {
         $query = \App\Models\Transaction::where('user_id', Auth::id())->with('details.product');
         
@@ -80,40 +93,36 @@ Route::middleware(['auth'])->group(function () {
         return view('orders.show', compact('order'));
     })->name('orders.show');
 
-    // 4. ADMIN ROUTES
+
+    // =================================================================
+    // 4. ADMIN ROUTES (DIGABUNG & DIRAPIKAN)
+    // =================================================================
     Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
         
         // Admin Dashboard
         Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
         
-        // Admin Orders
+        // Admin Orders (Custom routes karena butuh update status spesifik)
         Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
         Route::get('/orders/{id}', [\App\Http\Controllers\Admin\OrderController::class, 'show'])->name('orders.show');
         Route::post('/orders/{id}/status', [\App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.update-status');
         
-        // Admin Products
-        Route::get('/products', [\App\Http\Controllers\Admin\ProductController::class, 'index'])->name('products.index');
-        Route::get('/products/create', [\App\Http\Controllers\Admin\ProductController::class, 'create'])->name('products.create');
-        Route::post('/products', [\App\Http\Controllers\Admin\ProductController::class, 'store'])->name('products.store');
-        Route::get('/products/{product}/edit', [\App\Http\Controllers\Admin\ProductController::class, 'edit'])->name('products.edit');
-        Route::put('/products/{product}', [\App\Http\Controllers\Admin\ProductController::class, 'update'])->name('products.update');
-        Route::delete('/products/{product}', [\App\Http\Controllers\Admin\ProductController::class, 'destroy'])->name('products.destroy');
+        // Admin Products (Pakai Resource biar rapi: index, create, store, edit, update, destroy)
+        Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);
         
-        // Admin Categories
-        Route::get('/categories', [\App\Http\Controllers\Admin\CategoryController::class, 'index'])->name('categories.index');
-        Route::get('/categories/create', [\App\Http\Controllers\Admin\CategoryController::class, 'create'])->name('categories.create');
-        Route::post('/categories', [\App\Http\Controllers\Admin\CategoryController::class, 'store'])->name('categories.store');
-        Route::get('/categories/{category}/edit', [\App\Http\Controllers\Admin\CategoryController::class, 'edit'])->name('categories.edit');
-        Route::put('/categories/{category}', [\App\Http\Controllers\Admin\CategoryController::class, 'update'])->name('categories.update');
-        Route::delete('/categories/{category}', [\App\Http\Controllers\Admin\CategoryController::class, 'destroy'])->name('categories.destroy');
+        // Admin Categories (Pakai Resource biar rapi)
+        Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class);
        
-        // Admin Supplier Management
+        // Admin Supplier Management (Custom routes)
         Route::get('/suppliers', [\App\Http\Controllers\Admin\SupplierController::class, 'index'])->name('suppliers.index');
         Route::get('/suppliers/{id}', [\App\Http\Controllers\Admin\SupplierController::class, 'show'])->name('suppliers.show');
         Route::post('/suppliers/{id}/approve', [\App\Http\Controllers\Admin\SupplierController::class, 'approve'])->name('suppliers.approve');
         Route::post('/suppliers/{id}/reject', [\App\Http\Controllers\Admin\SupplierController::class, 'reject'])->name('suppliers.reject');
     
-    });
-});
+    }); // End Admin Group
 
+}); // End Auth Group
+
+
+// Auth Routes (Breeze/Jetstream default)
 require __DIR__.'/auth.php';
