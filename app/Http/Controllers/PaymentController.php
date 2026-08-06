@@ -18,10 +18,15 @@ class PaymentController extends Controller
     public function __construct()
     {
         Config::$serverKey = config('midtrans.server_key');
-        Config::$clientKey = config('midtrans.client_key');
-        Config::$isProduction = (bool) config('midtrans.is_production');
-        Config::$isSanitized = (bool) config('midtrans.is_sanitized');
-        Config::$is3ds = (bool) config('midtrans.is_3ds');
+        Config::$isProduction = config('midtrans.is_production');
+        Config::$isSanitized = config('midtrans.is_sanitized');
+        Config::$is3ds = config('midtrans.is_3ds');
+        
+        // Disable SSL verification buat localhost
+        Config::$curlOptions = [
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => 0,
+        ];
     }
 
     /**
@@ -60,8 +65,8 @@ class PaymentController extends Controller
         // ORDER ID UNIK: Tambah timestamp biar gak bentrok
         $orderId = 'INV-' . $transaction->id . '-' . date('YmdHis');
 
-        // URL absolut sesuai environment (local / Railway)
-        $baseUrl = config('app.url');
+        // URL absolut untuk localhost
+        $baseUrl = 'http://127.0.0.1:8000';
 
         $params = [
             'transaction_details' => [
@@ -74,7 +79,7 @@ class PaymentController extends Controller
             ],
             'item_details' => [],
             'enabled_payments' => ['credit_card', 'bca_va', 'bni_va', 'mandiri', 'bri_va', 'gopay', 'shopeepay'],
-
+            
             // URL absolut buat redirect setelah bayar
             'finish_redirect_url' => $baseUrl . '/payment/' . $transaction->id . '/success',
             'unfinish_redirect_url' => $baseUrl . '/my-orders',
@@ -86,21 +91,20 @@ class PaymentController extends Controller
                 'id' => $detail->product_id,
                 'price' => (int) $detail->price,
                 'quantity' => $detail->quantity,
-                'name' => substr($detail->product->name ?? 'Produk', 0, 50),
+                'name' => substr($detail->product->name, 0, 50),
             ];
         }
 
-        \Log::info('MIDTRANS CONFIG', [
-            'server_key' => Config::$serverKey,
-            'client_key' => config('midtrans.client_key'),
-            'production' => Config::$isProduction,
-            'app_url' => config('app.url'),
-        ]);
-
-        \Log::info('MIDTRANS PARAMS', $params);
+        Config::$curlOptions = [
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => 0,
+        ];
 
         try {
+            // Pakai createTransaction buat dapet redirect URL
+            set_error_handler(function() { /* ignore warnings */ });
             $transactionResponse = Snap::createTransaction($params);
+            restore_error_handler();
 
             $redirectUrl = $transactionResponse->redirect_url;
 
@@ -112,16 +116,17 @@ class PaymentController extends Controller
             // Langsung redirect ke halaman Midtrans
             return redirect()->away($redirectUrl);
 
-        } catch (\Throwable $e) {
-            \Log::error('MIDTRANS PROCESS ERROR', [
-                'message' => $e->getMessage(),
-                'exception' => get_class($e),
+        } catch (\Exception $e) {
+            restore_error_handler();
+            
+            // Dump error detail
+            dd([
+                'error_message' => $e->getMessage(),
+                'error_code' => $e->getCode(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString(),
+                'params' => $params,
             ]);
-
-            throw $e;
         }
     }
 
@@ -131,27 +136,12 @@ class PaymentController extends Controller
     public function success($transactionId)
     {
         $transaction = Transaction::findOrFail($transactionId);
-
+        
         if ($transaction->user_id !== Auth::id()) {
             abort(403);
         }
 
         return view('payment.success', compact('transaction'));
-    }
-
-    /**
-     * Halaman ketika user batal / belum menyelesaikan pembayaran
-     */
-    public function unfinish($transactionId)
-    {
-        $transaction = Transaction::findOrFail($transactionId);
-
-        if ($transaction->user_id !== Auth::id()) {
-            abort(403);
-        }
-
-        return redirect()->route('orders.show', $transaction->id)
-            ->with('info', 'Pembayaran belum selesai. Silakan lanjutkan pembayaran kapan saja.');
     }
 
     /**
@@ -163,7 +153,7 @@ class PaymentController extends Controller
 
         $orderId = $notif->order_id;
         // Ambil ID transaksi dari order_id (format: INV-{id}-{timestamp})
-        $transactionId = explode('-', $orderId)[1];
+        $transactionId = explode('-', $orderId)[1]; 
         $transaction = Transaction::find($transactionId);
 
         if (!$transaction) {
@@ -177,11 +167,11 @@ class PaymentController extends Controller
         if ($transactionStatus == 'capture' || $transactionStatus == 'settlement') {
             if ($fraud == 'accept' || !$fraud) {
                 $transaction->update(['status' => 'paid']);
-
+                
                 // === HAPUS CART KALAU SUKSES BAYAR ===
                 $cart = Cart::where('user_id', $transaction->user_id)->first();
                 if ($cart) {
-                    $cart->items()->delete();
+                    $cart->items()->delete(); 
                 }
                 // =====================================
             }
@@ -232,8 +222,8 @@ class PaymentController extends Controller
             // Order ID unik
             $orderId = 'INV-' . $transaction->id . '-' . date('YmdHis');
 
-            // URL absolut sesuai environment (local / Railway)
-            $baseUrl = config('app.url');
+            // URL absolut untuk localhost
+            $baseUrl = 'http://127.0.0.1:8000';
 
             $params = [
                 'transaction_details' => [
@@ -246,7 +236,7 @@ class PaymentController extends Controller
                 ],
                 'item_details' => [],
                 'enabled_payments' => ['credit_card', 'bca_va', 'bni_va', 'mandiri', 'bri_va', 'gopay', 'shopeepay', 'qris'],
-
+                
                 // URL absolut buat redirect setelah bayar
                 'finish_redirect_url' => $baseUrl . '/payment/' . $transaction->id . '/success',
                 'unfinish_redirect_url' => $baseUrl . '/my-orders',
@@ -266,16 +256,14 @@ class PaymentController extends Controller
                 ];
             }
 
-            \Log::info('MIDTRANS CONFIG', [
-                'server_key' => Config::$serverKey,
-                'client_key' => config('midtrans.client_key'),
-                'production' => Config::$isProduction,
-                'app_url' => config('app.url'),
-            ]);
+            Config::$curlOptions = [
+                CURLOPT_SSL_VERIFYPEER => false,
+                CURLOPT_SSL_VERIFYHOST => 0,
+            ];
 
-            \Log::info('MIDTRANS PARAMS', $params);
-
+            set_error_handler(function() { /* ignore warnings */ });
             $transactionResponse = Snap::createTransaction($params);
+            restore_error_handler();
 
             $transaction->update([
                 'status' => 'pending',
@@ -284,16 +272,17 @@ class PaymentController extends Controller
 
             return redirect()->away($transactionResponse->redirect_url);
 
-        } catch (\Throwable $e) {
-            \Log::error('MIDTRANS ERROR', [
-                'message' => $e->getMessage(),
+        } catch (\Exception $e) {
+            // Log error detail untuk developer
+            \Log::error('Midtrans Payment Error: ' . $e->getMessage(), [
                 'exception' => get_class($e),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            throw $e;
+            // User-friendly error message
+            return back()->with('error', 'Maaf, terjadi kesalahan saat memproses pembayaran. Silakan coba lagi atau hubungi administrator.');
         }
     }
 }

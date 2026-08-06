@@ -3,10 +3,7 @@
     <!-- BANNER AREA (Slider Simulasi) -->
     <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-4">
         <div class="relative w-full h-40 sm:h-64 rounded-xl overflow-hidden shadow-sm group">
-            <!-- Gambar Banner -->
             <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Banner" class="w-full h-full object-cover">
-            
-            <!-- Overlay Text -->
             <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
                 <div class="text-center text-white">
                     <h2 class="text-3xl font-bold mb-2">Selamat Datang!</h2>
@@ -16,41 +13,33 @@
         </div>
     </div>
 
-    <!-- KATEGORI (Horizontal Scroll ala Shopee) -->
+    <!-- KATEGORI -->
     <div class="bg-white py-6 shadow-sm mb-4">
         <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between mb-4 px-2">
                 <h3 class="text-gray-600 font-medium">KATEGORI</h3>
             </div>
-            
-            <!-- Container Scroll Horizontal -->
             <div class="flex overflow-x-auto space-x-6 pb-2 snap-x snap-mandatory scrollbar-hide" style="-ms-overflow-style: none; scrollbar-width: none;">
-                
                 @foreach($categories ?? [] as $category)
                     <a href="{{ route('shop.index', ['category' => $category->id]) }}" class="flex-shrink-0 w-24 flex flex-col items-center snap-start hover:scale-105 transition-transform duration-200 cursor-pointer">
-                        <!-- Icon Bulat -->
                         <div class="w-16 h-16 rounded-full border border-gray-200 flex items-center justify-center bg-gray-50 mb-2 shadow-sm">
-                            <!-- Contoh Icon SVG Sederhana -->
                             <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
                             </svg>
                         </div>
-                        <!-- Nama Kategori -->
                         <span class="text-xs text-center text-gray-600 line-clamp-2 leading-tight px-1">{{ $category->name }}</span>
                     </a>
                 @endforeach
-
             </div>
         </div>
     </div>
 
-    <!-- PRODUK TERBARU / REKOMENDASI -->
+    <!-- REKOMENDASI -->
     <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-6">
         <div class="sticky top-16 z-40 bg-white pb-2 border-b mb-4">
             <h2 class="text-lg font-bold text-gray-800 py-2">REKOMENDASI</h2>
         </div>
 
-        <!-- Grid Produk -->
         @if(isset($products) && $products->count() > 0)
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
                 @foreach($products as $product)
@@ -64,10 +53,14 @@
                                 <div class="absolute top-0 left-0 w-full h-full bg-gray-200 flex items-center justify-center text-gray-400 text-xs">No Image</div>
                             @endif
                             
-                            <!-- Badge Diskon (Opsional) -->
-                            @if($product->id % 2 == 0) <!-- Simulasi -->
-                                <div class="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold px-1 py-1 rounded-bl-sm">
-                                    -10%
+                            <!-- Badge: Stok menipis -->
+                            @if($product->stock > 0 && $product->stock <= 5)
+                                <div class="absolute top-0 left-0 bg-orange-500 text-white text-[10px] font-bold px-1 py-1 rounded-br-sm">
+                                    Sisa {{ $product->stock }}
+                                </div>
+                            @elseif($product->stock == 0)
+                                <div class="absolute top-0 left-0 bg-red-500 text-white text-[10px] font-bold px-1 py-1 rounded-br-sm">
+                                    Habis
                                 </div>
                             @endif
                         </a>
