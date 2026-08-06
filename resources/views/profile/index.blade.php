@@ -46,11 +46,12 @@
                     <div class="bg-white border border-gray-200 rounded-sm hover:shadow-lg hover:border-brand-500 transition-all duration-200 flex flex-col group">
                         
                         <!-- Image -->
-                        <a href="{{ route('shop.show', $product) }}" class="block relative overflow-hidden pt-[100%]">
+                        <a href="{{ route('shop.show', $product) }}" class="block relative overflow-hidden bg-gray-100 aspect-square">
                             @if($product->image)
-                                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="absolute top-0 left-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}"
+                                     class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                             @else
-                                <div class="absolute top-0 left-0 w-full h-full bg-gray-200 flex items-center justify-center text-gray-400 text-xs">No Image</div>
+                                <div class="absolute inset-0 flex items-center justify-center text-gray-400 text-xs">No Image</div>
                             @endif
                             
                             <!-- Badge: Stok menipis -->
