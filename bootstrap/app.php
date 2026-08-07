@@ -14,7 +14,12 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
-            'admin' => \App\Http\Middleware\AdminMiddleware::class,  // TAMBAHKAN INI
+            'admin' => \App\Http\Middleware\AdminMiddleware::class,
+        ]);
+
+        // Exclude webhook Midtrans dari CSRF protection
+        $middleware->validateCsrfTokens(except: [
+            'midtrans/notification',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
