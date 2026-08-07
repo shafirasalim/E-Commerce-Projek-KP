@@ -1,4 +1,22 @@
 <x-public-layout :title="$product->name">
+
+    <style>
+        .img-square {
+            display: block;
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 1 / 1;
+            background-color: #f3f4f6;
+        }
+        .img-square img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
     
     <div class="bg-white py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -20,7 +38,9 @@
                 <!-- Product Image -->
                 <div>
                     @if($product->image)
-                        <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-full rounded-lg shadow-lg">
+                        <div class="img-square rounded-lg shadow-lg">
+                            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
+                        </div>
                     @else
                         <div class="w-full h-96 bg-gray-200 rounded-lg flex items-center justify-center">
                             <span class="text-gray-400 text-lg">No Image</span>
@@ -95,7 +115,9 @@
                         @foreach($relatedProducts as $related)
                             <a href="{{ route('shop.show', $related) }}" class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition overflow-hidden">
                                 @if($related->image)
-                                    <img src="{{ asset('storage/' . $related->image) }}" alt="{{ $related->name }}" class="w-full h-32 object-cover">
+                                    <div class="img-square" style="aspect-ratio: 4 / 3;">
+                                        <img src="{{ asset('storage/' . $related->image) }}" alt="{{ $related->name }}">
+                                    </div>
                                 @else
                                     <div class="w-full h-32 bg-gray-200 flex items-center justify-center">
                                         <span class="text-gray-400 text-sm">No Image</span>

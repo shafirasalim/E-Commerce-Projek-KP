@@ -15,14 +15,10 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.5s;
-        }
-        .img-square:hover img {
-            transform: scale(1.05);
         }
     </style>
 
-    <!-- BANNER AREA -->
+    <!-- BANNER AREA (Slider Simulasi) -->
     <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-4">
         <div class="relative w-full h-40 sm:h-64 rounded-xl overflow-hidden shadow-sm group">
             <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Banner" class="w-full h-full object-cover">
@@ -70,11 +66,13 @@
                         <!-- Image -->
                         <a href="{{ route('shop.show', $product) }}" class="img-square">
                             @if($product->image)
-                                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
+                                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}"
+                                     class="transition-transform duration-500 group-hover:scale-105">
                             @else
                                 <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center text-gray-400 text-xs">No Image</div>
                             @endif
                             
+                            <!-- Badge: Stok menipis -->
                             @if($product->stock > 0 && $product->stock <= 5)
                                 <div class="absolute top-0 left-0 bg-orange-500 text-white text-[10px] font-bold px-1 py-1 rounded-br-sm">
                                     Sisa {{ $product->stock }}
