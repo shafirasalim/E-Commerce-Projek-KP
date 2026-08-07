@@ -1,4 +1,20 @@
 <x-public-layout title="Keranjang Belanja">
+
+    <style>
+        .img-thumb {
+            width: 6rem;
+            height: 6rem;
+            background-color: #ffffff;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .img-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    </style>
     
     <div class="bg-white py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -39,9 +55,9 @@
                                             </div>
                                             
                                             <!-- Product Image -->
-                                            <div class="flex-shrink-0 w-24 h-24 bg-gray-200 rounded-lg overflow-hidden">
+                                            <div class="img-thumb">
                                                 @if($item['image'])
-                                                    <img src="{{ asset('storage/' . $item['image']) }}" alt="{{ $item['name'] }}" class="w-full h-full object-cover">
+                                                    <img src="{{ asset('storage/' . $item['image']) }}" alt="{{ $item['name'] }}">
                                                 @else
                                                     <div class="w-full h-full flex items-center justify-center text-gray-400 text-xs">No Image</div>
                                                 @endif
@@ -61,7 +77,6 @@
 
                                             <!-- Quantity & Actions -->
                                             <div class="flex-shrink-0 flex items-center gap-3">
-                                                <!-- Quantity Controls - HITUNG DI JS, BUKAN DI VIEW! -->
                                                 <div class="flex items-center border border-gray-300 rounded-md">
                                                     <button type="button" onclick="updateQuantity({{ $item['product_id'] }}, 'decrease')" 
                                                         class="px-3 py-2 text-gray-600 hover:text-brand-600 hover:bg-gray-50 transition">
@@ -76,7 +91,6 @@
                                                     </button>
                                                 </div>
 
-                                                <!-- Delete Button -->
                                                 <button type="button" onclick="removeItem({{ $item['product_id'] }})" 
                                                     class="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded transition" 
                                                     title="Hapus dari keranjang">
@@ -146,10 +160,8 @@
     </div>
 
     <script>
-        // Flag buat cegah double click
         const isUpdating = {};
 
-        // Function untuk show toast notification
         function showToast(message, type = 'success') {
             const toast = document.createElement('div');
             toast.className = `fixed top-4 right-4 px-6 py-4 rounded-lg shadow-lg transform transition-all duration-300 translate-x-full z-50 ${
@@ -181,17 +193,13 @@
             }, 3000);
         }
 
-        // Function untuk update quantity - HITUNG DI JS!
         function updateQuantity(productId, action) {
-            // Cegah double click
             if (isUpdating[productId]) return;
             isUpdating[productId] = true;
 
-            // Baca quantity saat ini dari DOM
             const qtyElement = document.getElementById('qty-' + productId);
             let currentQty = parseInt(qtyElement.textContent);
             
-            // Hitung quantity baru di JavaScript
             let newQty;
             if (action === 'increase') {
                 newQty = currentQty + 1;
@@ -214,16 +222,13 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Update tampilan dari response server
                     qtyElement.textContent = newQty;
                     
-                    // Update data-quantity di checkbox
                     const checkbox = document.querySelector(`input[value="${productId}"]`);
                     if (checkbox) {
                         checkbox.dataset.quantity = newQty;
                     }
                     
-                    // Recalculate total
                     calculateTotal();
                     
                     showToast('Keranjang berhasil diupdate!');
@@ -236,12 +241,10 @@
                 showToast('Terjadi kesalahan saat update keranjang', 'error');
             })
             .finally(() => {
-                // Reset flag setelah request selesai
                 isUpdating[productId] = false;
             });
         }
 
-        // Function untuk hapus item
         function removeItem(productId) {
             if (isUpdating[productId]) return;
             isUpdating[productId] = true;

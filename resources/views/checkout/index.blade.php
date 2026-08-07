@@ -1,4 +1,21 @@
 <x-public-layout title="Checkout">
+
+    <style>
+        .img-checkout {
+            width: 3.5rem;
+            height: 3.5rem;
+            background-color: #ffffff;
+            border-radius: 0.375rem;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 1px solid #e5e7eb;
+        }
+        .img-checkout img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    </style>
     
     <div class="bg-white py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -20,7 +37,6 @@
             <form method="POST" action="{{ route('checkout.store') }}">
                 @csrf
                 
-                <!-- Hidden input untuk selected items (Wajib ada agar controller tahu item mana yang di-checkout) -->
                 @if(!isset($buyNowItem))
                     @foreach($checkoutItems as $item)
                         <input type="hidden" name="selected_items[]" value="{{ $item->product_id ?? $item['product_id'] }}">
@@ -83,18 +99,29 @@
                         <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 sticky top-20">
                             <h2 class="text-xl font-bold text-gray-900 mb-4">Ringkasan Pesanan</h2>
                             
-                            <!-- Items (Diperbaiki: pakai $checkoutItems, bukan $cart->items) -->
                             <div class="space-y-3 mb-6">
                                 @foreach($checkoutItems as $item)
                                     @php
-                                        // Handle format data (dari Cart atau dari Buy Now session)
-                                        $name = $item->product->name ?? $item['name'];
-                                        $price = $item->price;
+                                        $name = $item->product->name ?? $item['name'] ?? 'Produk';
+                                        $price = $item->price ?? 0;
                                         $qty = $item->quantity ?? 1;
+                                        $image = $item->product->image ?? $item['image'] ?? null;
                                     @endphp
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">{{ $name }} x{{ $qty }}</span>
-                                        <span class="font-medium">Rp {{ number_format($price * $qty, 0, ',', '.') }}</span>
+                                    <div class="flex gap-3 items-center">
+                                        <div class="img-checkout">
+                                            @if($image)
+                                                <img src="{{ asset('storage/' . $image) }}" alt="{{ $name }}">
+                                            @else
+                                                <div class="w-full h-full flex items-center justify-center text-gray-400 text-[10px]">No Image</div>
+                                            @endif
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm text-gray-800 truncate">{{ $name }}</p>
+                                            <p class="text-xs text-gray-500">{{ $qty }} x Rp {{ number_format($price, 0, ',', '.') }}</p>
+                                        </div>
+                                        <div class="text-sm font-medium text-gray-900">
+                                            Rp {{ number_format($price * $qty, 0, ',', '.') }}
+                                        </div>
                                     </div>
                                 @endforeach
                             </div>
