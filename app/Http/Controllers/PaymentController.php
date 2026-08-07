@@ -57,10 +57,7 @@ class PaymentController extends Controller
             abort(403, 'Akses ditolak');
         }
 
-        // ORDER ID UNIK: Tambah timestamp biar gak bentrok
         $orderId = 'INV-' . $transaction->id . '-' . date('YmdHis');
-
-        // URL absolut sesuai environment (local / Railway)
         $baseUrl = config('app.url');
 
         $params = [
@@ -74,8 +71,6 @@ class PaymentController extends Controller
             ],
             'item_details' => [],
             'enabled_payments' => ['credit_card', 'bca_va', 'bni_va', 'mandiri', 'bri_va', 'gopay', 'shopeepay'],
-
-            // URL absolut buat redirect setelah bayar
             'finish_redirect_url' => $baseUrl . '/payment/' . $transaction->id . '/success',
             'unfinish_redirect_url' => $baseUrl . '/my-orders',
             'error_redirect_url' => $baseUrl . '/my-orders',
@@ -90,38 +85,24 @@ class PaymentController extends Controller
             ];
         }
 
-        \Log::info('MIDTRANS CONFIG', [
-            'server_key' => Config::$serverKey,
-            'client_key' => config('midtrans.client_key'),
-            'production' => Config::$isProduction,
-            'app_url' => config('app.url'),
-        ]);
-
-        \Log::info('MIDTRANS PARAMS', $params);
-
         try {
             $transactionResponse = Snap::createTransaction($params);
-
-            $redirectUrl = $transactionResponse->redirect_url;
 
             $transaction->update([
                 'status' => 'pending',
                 'payment_method' => $validated['payment_method'],
             ]);
 
-            // Langsung redirect ke halaman Midtrans
-            return redirect()->away($redirectUrl);
+            return redirect()->route('payment.redirect', $transaction->id);
 
         } catch (\Throwable $e) {
             \Log::error('MIDTRANS PROCESS ERROR', [
                 'message' => $e->getMessage(),
-                'exception' => get_class($e),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString(),
             ]);
 
-            throw $e;
+            return back()->with('error', 'Gagal memproses pembayaran: ' . $e->getMessage());
         }
     }
 
@@ -162,7 +143,6 @@ class PaymentController extends Controller
         $notif = new Notification();
 
         $orderId = $notif->order_id;
-        // Ambil ID transaksi dari order_id (format: INV-{id}-{timestamp})
         $transactionId = explode('-', $orderId)[1];
         $transaction = Transaction::find($transactionId);
 
@@ -173,17 +153,14 @@ class PaymentController extends Controller
         $transactionStatus = $notif->transaction_status;
         $fraud = $notif->fraud_status;
 
-        // CEK STATUS PEMBAYARAN
         if ($transactionStatus == 'capture' || $transactionStatus == 'settlement') {
             if ($fraud == 'accept' || !$fraud) {
                 $transaction->update(['status' => 'paid']);
 
-                // === HAPUS CART KALAU SUKSES BAYAR ===
                 $cart = Cart::where('user_id', $transaction->user_id)->first();
                 if ($cart) {
                     $cart->items()->delete();
                 }
-                // =====================================
             }
         } elseif ($transactionStatus == 'pending') {
             $transaction->update(['status' => 'pending']);
@@ -199,7 +176,7 @@ class PaymentController extends Controller
     }
 
     /**
-     * Langsung redirect ke Midtrans (tanpa pilih metode)
+     * Buka popup Snap di dalam web kita (TANPA redirect keluar)
      */
     public function redirectToMidtrans($transactionId)
     {
@@ -215,23 +192,12 @@ class PaymentController extends Controller
                     ->with('success', 'Transaksi ini sudah dibayar.');
             }
 
-            // VALIDASI: Cek total amount
             if (!$transaction->total_amount || $transaction->total_amount <= 0) {
-                \Log::error('Invalid transaction amount', [
-                    'transaction_id' => $transaction->id,
-                    'total_amount' => $transaction->total_amount,
-                    'details' => $transaction->details->toArray(),
-                ]);
-
                 return redirect()->route('orders.show', $transaction->id)
-                    ->with('error', 'Terjadi kesalahan pada jumlah pembayaran. Silakan hubungi administrator.');
+                    ->with('error', 'Terjadi kesalahan pada jumlah pembayaran.');
             }
 
-            // Order ID unik
             $orderId = 'INV-' . $transaction->id . '-' . date('YmdHis');
-
-            // URL absolut sesuai environment (local / Railway)
-            $baseUrl = config('app.url');
 
             $params = [
                 'transaction_details' => [
@@ -244,11 +210,6 @@ class PaymentController extends Controller
                 ],
                 'item_details' => [],
                 'enabled_payments' => ['credit_card', 'bca_va', 'bni_va', 'mandiri', 'bri_va', 'gopay', 'shopeepay', 'qris'],
-
-                // URL absolut buat redirect setelah bayar
-                'finish_redirect_url' => $baseUrl . '/payment/' . $transaction->id . '/success',
-                'unfinish_redirect_url' => $baseUrl . '/my-orders',
-                'error_redirect_url' => $baseUrl . '/my-orders',
             ];
 
             foreach ($transaction->details as $detail) {
@@ -264,15 +225,6 @@ class PaymentController extends Controller
                 ];
             }
 
-            \Log::info('MIDTRANS CONFIG', [
-                'server_key' => Config::$serverKey,
-                'client_key' => config('midtrans.client_key'),
-                'production' => Config::$isProduction,
-                'app_url' => config('app.url'),
-            ]);
-
-            \Log::info('MIDTRANS PARAMS', $params);
-
             $transactionResponse = Snap::createTransaction($params);
 
             $transaction->update([
@@ -280,18 +232,28 @@ class PaymentController extends Controller
                 'payment_method' => 'midtrans',
             ]);
 
-            return redirect()->away($transactionResponse->redirect_url);
+            // Pilih snap.js sesuai environment
+            $snapUrl = config('midtrans.is_production')
+                ? 'https://app.midtrans.com/snap/snap.js'
+                : 'https://app.sandbox.midtrans.com/snap/snap.js';
+
+            return view('payment.pay', [
+                'snapToken' => $transactionResponse->token,
+                'snapUrl' => $snapUrl,
+                'clientKey' => config('midtrans.client_key'),
+                'successUrl' => route('payment.success', $transaction->id),
+                'ordersUrl' => route('orders.index'),
+            ]);
 
         } catch (\Throwable $e) {
             \Log::error('MIDTRANS ERROR', [
                 'message' => $e->getMessage(),
-                'exception' => get_class($e),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString(),
             ]);
 
-            throw $e;
+            return redirect()->route('orders.index')
+                ->with('error', 'Gagal memproses pembayaran: ' . $e->getMessage());
         }
     }
 }
