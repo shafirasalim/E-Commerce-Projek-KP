@@ -6,7 +6,7 @@
             position: relative;
             overflow: hidden;
             aspect-ratio: 1 / 1;
-            background-color: #f3f4f6;
+            background-color: #ffffff;
         }
         .img-square img {
             position: absolute;
@@ -14,7 +14,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
         }
     </style>
     
