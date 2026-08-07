@@ -14,7 +14,20 @@ class CartController extends Controller
     {
         if (Auth::check()) {
             $cart = Cart::where('user_id', Auth::id())->first();
-            $cartItems = $cart ? $cart->items()->with('product')->get() : collect();
+            $items = $cart ? $cart->items()->with('product')->get() : collect();
+            
+            // Convert ke array biar konsisten sama guest cart
+            $cartItems = $items->map(function($item) {
+                return [
+                    'id' => $item->id,
+                    'product_id' => $item->product_id,
+                    'quantity' => $item->quantity,
+                    'price' => $item->price,
+                    'image' => $item->product->image ?? null,
+                    'name' => $item->product->name ?? 'Produk',
+                    'product' => $item->product
+                ];
+            });
         } else {
             $sessionCart = session()->get('cart', []);
             $cartItems = collect($sessionCart)->map(function($item, $productId) {
@@ -77,7 +90,7 @@ class CartController extends Controller
     }
 
     // Update quantity item di keranjang
-   public function update(Request $request, $itemId)
+    public function update(Request $request, $itemId)
     {
         try {
             $quantity = $request->input('quantity');
