@@ -1,6 +1,28 @@
 <x-public-layout title="Beranda - Toko Online">
-    
-    <!-- BANNER AREA (Slider Simulasi) -->
+
+    <style>
+        .img-square {
+            display: block;
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 1 / 1;
+            background-color: #f3f4f6;
+        }
+        .img-square img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+        .img-square:hover img {
+            transform: scale(1.05);
+        }
+    </style>
+
+    <!-- BANNER AREA -->
     <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-4">
         <div class="relative w-full h-40 sm:h-64 rounded-xl overflow-hidden shadow-sm group">
             <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Banner" class="w-full h-full object-cover">
@@ -46,15 +68,13 @@
                     <div class="bg-white border border-gray-200 rounded-sm hover:shadow-lg hover:border-brand-500 transition-all duration-200 flex flex-col group">
                         
                         <!-- Image -->
-                        <a href="{{ route('shop.show', $product) }}" class="block relative overflow-hidden bg-gray-100 aspect-square">
+                        <a href="{{ route('shop.show', $product) }}" class="img-square">
                             @if($product->image)
-                                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}"
-                                     class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
                             @else
-                                <div class="absolute inset-0 flex items-center justify-center text-gray-400 text-xs">No Image</div>
+                                <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center text-gray-400 text-xs">No Image</div>
                             @endif
                             
-                            <!-- Badge: Stok menipis -->
                             @if($product->stock > 0 && $product->stock <= 5)
                                 <div class="absolute top-0 left-0 bg-orange-500 text-white text-[10px] font-bold px-1 py-1 rounded-br-sm">
                                     Sisa {{ $product->stock }}
