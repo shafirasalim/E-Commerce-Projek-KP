@@ -7,7 +7,7 @@
                 
                 <!-- Slide 1: Markisa Cianjur -->
                 <div class="swiper-slide relative">
-                    <img src="https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=1600&h=900&fit=crop" 
+                    <img src="{{ asset('images/buahmarkisa.jpg') }}" 
                          alt="Markisa Cianjur" class="absolute inset-0 w-full h-full object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                     <div class="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-4 max-w-4xl mx-auto">
@@ -21,7 +21,7 @@
 
                 <!-- Slide 2: Petani Lokal -->
                 <div class="swiper-slide relative">
-                    <img src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=1600&h=900&fit=crop" 
+                    <img src="{{ asset('images/kebunmarkisa.jpg') }}" 
                          alt="Petani Lokal" class="absolute inset-0 w-full h-full object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                     <div class="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-4 max-w-4xl mx-auto">
@@ -35,7 +35,7 @@
 
                 <!-- Slide 3: Kualitas Terjamin -->
                 <div class="swiper-slide relative">
-                    <img src="https://images.unsplash.com/photo-1610832958506-aa5636a67a6f?w=1600&h=900&fit=crop" 
+                    <img src="{{ asset('images/fotoproduk1.jpeg') }}" 
                          alt="Kualitas" class="absolute inset-0 w-full h-full object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                     <div class="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-4 max-w-4xl mx-auto">
@@ -62,7 +62,7 @@
                 <div data-aos="fade-right">
                     <div class="relative">
                         <div class="absolute -inset-4 bg-brand-100 rounded-2xl transform -rotate-3"></div>
-                        <img src="https://images.unsplash.com/photo-1582281298055-e25b84a30b0b?w=600&h=400&fit=crop" 
+                        <img src="{{ asset('images/hachipasiflora.jpg') }}" 
                              alt="Sejarah Markisa" 
                              class="relative rounded-xl shadow-lg w-full object-cover h-80">
                     </div>
