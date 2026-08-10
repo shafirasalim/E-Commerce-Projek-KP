@@ -62,7 +62,7 @@
                 <div data-aos="fade-right">
                     <div class="relative">
                         <div class="absolute -inset-4 bg-brand-100 rounded-2xl transform -rotate-3"></div>
-                        <img src="{{ asset('images/hachipasiflora.jpg') }}" 
+                        <img src="{{ asset('images/fotoproduk2.jpeg') }}" 
                              alt="Sejarah Markisa" 
                              class="relative rounded-xl shadow-lg w-full object-cover h-80">
                     </div>
