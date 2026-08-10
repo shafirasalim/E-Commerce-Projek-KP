@@ -12,8 +12,6 @@ use Illuminate\Support\Facades\Route;
 // =================================================================
 // 0. WEBHOOK MIDTRANS (WAJIB DI LUAR MIDDLEWARE 'auth'!)
 // =================================================================
-// Midtrans mengirim POST request tanpa session cookie Laravel.
-// Jika ada middleware 'auth', webhook akan ditolak (redirect ke login).
 Route::post('/midtrans/notification', [PaymentController::class, 'notification'])->name('midtrans.notification');
 
 
@@ -45,12 +43,15 @@ Route::post('/cart/remove/{itemId}', [CartController::class, 'remove'])->name('c
 
 
 // =================================================================
-// 3. AREA WAJIB LOGIN (USER)
+// 3. AREA WAJIB LOGIN (USER & ADMIN)
 // =================================================================
 Route::middleware(['auth'])->group(function () {
     
-    // Dashboard redirect ke home
+    // Dashboard redirect BERDASARKAN ROLE (SUDAH DIPERBAIKI!)
     Route::get('/dashboard', function () {
+        if (Auth::check() && Auth::user()->role && Auth::user()->role->nama_role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
         return redirect()->route('home');
     })->name('dashboard');
 
@@ -71,7 +72,7 @@ Route::middleware(['auth'])->group(function () {
     // Payment Routes
     Route::get('/payment/{transactionId}', [PaymentController::class, 'redirectToMidtrans'])->name('payment.redirect');
     Route::get('/payment/{transactionId}/success', [PaymentController::class, 'success'])->name('payment.success');
-    Route::get('/payment/{transactionId}/unfinish', [PaymentController::class, 'unfinish'])->name('payment.unfinish'); // Tambahan buat handle batal
+    Route::get('/payment/{transactionId}/unfinish', [PaymentController::class, 'unfinish'])->name('payment.unfinish');
 
     // Pesanan Saya (User)
     Route::get('/my-orders', function (Request $request) {
@@ -102,18 +103,18 @@ Route::middleware(['auth'])->group(function () {
         // Admin Dashboard
         Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
         
-        // Admin Orders (Custom routes karena butuh update status spesifik)
+        // Admin Orders
         Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
         Route::get('/orders/{id}', [\App\Http\Controllers\Admin\OrderController::class, 'show'])->name('orders.show');
         Route::post('/orders/{id}/status', [\App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.update-status');
         
-        // Admin Products (Pakai Resource biar rapi: index, create, store, edit, update, destroy)
+        // Admin Products
         Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);
         
-        // Admin Categories (Pakai Resource biar rapi)
+        // Admin Categories
         Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class);
        
-        // Admin Supplier Management (Custom routes)
+        // Admin Supplier Management
         Route::get('/suppliers', [\App\Http\Controllers\Admin\SupplierController::class, 'index'])->name('suppliers.index');
         Route::get('/suppliers/{id}', [\App\Http\Controllers\Admin\SupplierController::class, 'show'])->name('suppliers.show');
         Route::post('/suppliers/{id}/approve', [\App\Http\Controllers\Admin\SupplierController::class, 'approve'])->name('suppliers.approve');
