@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title ?? 'Markisa Madu Cianjur' }}</title>
+    <title>{{ $title ?? 'Cianjur Fresh' }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans antialiased bg-gray-50">
@@ -13,8 +13,10 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
-                    <a href="{{ route('home') }}" class="text-2xl font-bold text-brand-600">
-                        BRAND LOGO
+                    <!-- PERBAIKAN LOGO DI SINI -->
+                    <a href="{{ route('home') }}" class="flex items-center gap-2 group">
+                        <img src="{{ asset('images/logomarkisa.png') }}" alt="Logo Cianjur Fresh" class="h-10 w-auto object-contain group-hover:scale-105 transition-transform duration-200">
+                        <span class="text-2xl font-bold text-brand-600">CIANJUR FRESH</span>
                     </a>
                 </div>
                 
@@ -58,6 +60,10 @@
                         <div x-show="open" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50" style="display: none;">
                             <a href="{{ route('home') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Beranda</a>
                             <a href="{{ route('orders.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Pesanan Saya</a>
+                            
+                            <!-- Tambahan: Pengaturan Akun -->
+                            <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Pengaturan Akun</a>
+                            
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</button>
@@ -85,6 +91,7 @@
                 <a href="{{ route('shop.index') }}" class="block px-3 py-2 text-gray-600 hover:bg-brand-50 hover:text-brand-600 rounded">Katalog</a>
                 <a href="{{ route('cart.index') }}" class="block px-3 py-2 text-gray-600 hover:bg-brand-50 hover:text-brand-600 rounded">Keranjang</a>
                 <a href="{{ route('orders.index') }}" class="block px-3 py-2 text-gray-600 hover:bg-brand-50 hover:text-brand-600 rounded">Pesanan Saya</a>
+                <a href="{{ route('profile.edit') }}" class="block px-3 py-2 text-gray-600 hover:bg-brand-50 hover:text-brand-600 rounded">Pengaturan Akun</a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="block w-full text-left px-3 py-2 text-gray-600 hover:bg-brand-50 hover:text-brand-600 rounded">Logout</button>
