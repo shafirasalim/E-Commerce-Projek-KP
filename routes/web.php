@@ -120,6 +120,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/suppliers/{id}/approve', [\App\Http\Controllers\Admin\SupplierController::class, 'approve'])->name('suppliers.approve');
         Route::post('/suppliers/{id}/reject', [\App\Http\Controllers\Admin\SupplierController::class, 'reject'])->name('suppliers.reject');
     
+        // Admin Reports
+        Route::get('/reports', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
+        Route::get('/reports/download', [\App\Http\Controllers\Admin\ReportController::class, 'download'])->name('reports.download');
     }); // End Admin Group
 
 }); // End Auth Group
