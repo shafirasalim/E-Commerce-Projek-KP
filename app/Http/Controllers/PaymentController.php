@@ -19,7 +19,7 @@ class PaymentController extends Controller
     {
         Config::$serverKey = config('midtrans.server_key');
         Config::$clientKey = config('midtrans.client_key');
-        Config::$isProduction = (bool) config('midtrans.is_production');
+        Config::$isProduction = filter_var(config('midtrans.is_production'), FILTER_VALIDATE_BOOLEAN);  // ← FIXED
         Config::$isSanitized = (bool) config('midtrans.is_sanitized');
         Config::$is3ds = (bool) config('midtrans.is_3ds');
     }
