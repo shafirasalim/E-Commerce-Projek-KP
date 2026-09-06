@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Role;
+use App\Models\Cart;       // <-- TAMBAHAN: Import Model Cart
+use App\Models\CartItem;   // <-- TAMBAHAN: Import Model CartItem
 use App\Mail\WelcomeMail;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -30,7 +32,6 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        // Auto lowercase email sebelum validasi
         $request->merge([
             'email' => strtolower(trim($request->email)),
         ]);
@@ -42,7 +43,6 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        // Cari role 'customer' dari database
         $customerRole = Role::where('nama_role', 'customer')->first();
 
         $user = User::create([
@@ -53,15 +53,45 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        // === KIRIM EMAIL SELAMAT DATANG ===
         Mail::to($user->email)->send(new WelcomeMail($user));
-        // ===================================
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        // Ganti RouteServiceProvider::HOME dengan route('dashboard')
+        $this->mergeCartToDatabase($user);
+
         return redirect()->route('dashboard');
+    }
+
+    private function mergeCartToDatabase($user)
+    {
+        $sessionCart = session()->get('cart', []);
+        if (empty($sessionCart)) {
+            return;
+        }
+
+        $userCart = Cart::firstOrCreate([
+            'user_id' => $user->id
+        ]);
+
+        foreach ($sessionCart as $productId => $item) {
+            $existingCartItem = CartItem::where('cart_id', $userCart->id)
+                                        ->where('product_id', $productId)
+                                        ->first();
+
+            if ($existingCartItem) {
+                $existingCartItem->quantity += $item['quantity'];
+                $existingCartItem->save();
+            } else {
+                CartItem::create([
+                    'cart_id' => $userCart->id,
+                    'product_id' => $productId,
+                    'quantity' => $item['quantity'],
+                    'price' => $item['price'] ?? 0, 
+                ]);
+            }
+        }
+        session()->forget('cart');
     }
 }
