@@ -74,9 +74,9 @@
 
                     <div class="mt-8">
                         <h3 class="text-lg font-semibold text-gray-900 mb-3">Deskripsi Produk</h3>
-                        <p class="text-gray-600 leading-relaxed">
-                            {{ $product->description ?? 'Tidak ada deskripsi' }}
-                        </p>
+                        <div class="text-gray-600 leading-relaxed prose prose-sm max-w-none">
+                            {!! nl2br(e($product->description ?? 'Tidak ada deskripsi')) !!}
+                        </div>
                     </div>
 
                     <!-- Add to Cart -->
