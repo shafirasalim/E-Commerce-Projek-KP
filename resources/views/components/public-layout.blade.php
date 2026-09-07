@@ -76,7 +76,10 @@
                                     <hr class="my-1">
                                     <div class="px-4 py-2 text-xs text-green-700 bg-green-50">✓ Akun Supplier Aktif</div>
                                 @else
-                                    <a href="{{ route('supplier.apply') }}" class="block px-4 py-2 text-sm text-brand-600 hover:bg-gray-100 font-medium">Daftar Supplier</a>
+                                    <!-- DIPERBAIKI: Tidak bold, dan hanya orange jika sedang di halaman supplier -->
+                                    <a href="{{ route('supplier.apply') }}" class="block px-4 py-2 text-sm {{ request()->routeIs('supplier.apply') ? 'text-brand-600' : 'text-gray-700 hover:bg-gray-100' }}">
+                                        Daftar Supplier
+                                    </a>
                                 @endif
                                 
                                 <hr class="my-1">
@@ -120,9 +123,14 @@
                 @auth
                     <a href="{{ route('orders.index') }}" class="block px-3 py-2 text-gray-600 hover:bg-brand-50 hover:text-brand-600 rounded">Pesanan Saya</a>
                     <a href="{{ route('profile.edit') }}" class="block px-3 py-2 text-gray-600 hover:bg-brand-50 hover:text-brand-600 rounded">Pengaturan Akun</a>
+                    
                     @if(Auth::user()->role && Auth::user()->role->nama_role !== 'supplier')
-                        <a href="{{ route('supplier.apply') }}" class="block px-3 py-2 text-brand-600 hover:bg-brand-50 rounded font-medium">Daftar Supplier</a>
+                        <!-- DIPERBAIKI: Tidak bold, dan hanya orange jika sedang di halaman supplier -->
+                        <a href="{{ route('supplier.apply') }}" class="block px-3 py-2 {{ request()->routeIs('supplier.apply') ? 'text-brand-600 bg-brand-50' : 'text-gray-600 hover:bg-brand-50' }} rounded">
+                            Daftar Supplier
+                        </a>
                     @endif
+                    
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="block w-full text-left px-3 py-2 text-gray-600 hover:bg-brand-50 hover:text-brand-600 rounded">Logout</button>
@@ -140,12 +148,10 @@
         {{ $slot }}
     </main>
 
-    <!-- FOOTER (DIPERBAIKI: 4 KOLOM + LINK SHOPEE) -->
+    <!-- FOOTER -->
     <footer class="bg-gray-900 text-white py-12 mt-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                
-                <!-- Kolom 1: Brand -->
                 <div>
                     <h3 class="text-xl font-bold text-brand-500 mb-4 flex items-center gap-2">
                         <img src="{{ asset('images/logomarkisa.png') }}" alt="Logo" class="h-8 w-auto object-contain">
@@ -153,8 +159,6 @@
                     </h3>
                     <p class="text-gray-400 text-sm leading-relaxed">Menyediakan produk berkualitas, segar, dan langsung dari petani lokal Cianjur untuk kebutuhan Anda.</p>
                 </div>
-                
-                <!-- Kolom 2: Tautan -->
                 <div>
                     <h4 class="text-lg font-semibold mb-4">Tautan</h4>
                     <ul class="space-y-2 text-sm text-gray-400">
@@ -163,8 +167,6 @@
                         <li><a href="{{ route('shop.index') }}" class="hover:text-brand-500 transition">Katalog</a></li>
                     </ul>
                 </div>
-
-                <!-- Kolom 3: Kontak -->
                 <div>
                     <h4 class="text-lg font-semibold mb-4">Kontak</h4>
                     <ul class="space-y-3 text-sm text-gray-400">
@@ -178,14 +180,11 @@
                         </li>
                     </ul>
                 </div>
-
-                <!-- Kolom 4: Belanja Online (BARU) -->
                 <div>
                     <h4 class="text-lg font-semibold mb-4">Belanja Online</h4>
                     <ul class="space-y-3 text-sm">
                         <li>
                             <a href="https://s.shopee.co.id/8KobEL9bOb" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 text-gray-400 hover:text-orange-500 transition group">
-                                <!-- Shopee Icon -->
                                 <svg class="w-6 h-6 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M19.552 16.248l-1.952-1.488c-0.24-0.192-0.592-0.144-0.784 0.096l-2.384 3.024c-0.416-0.768-0.944-1.472-1.584-2.08l2.368-3.024c0.192-0.24 0.144-0.592-0.096-0.784l-1.952-1.488c-0.24-0.192-0.592-0.144-0.784 0.096l-2.384 3.04c-0.608-0.128-1.248-0.192-1.888-0.192-0.656 0-1.296 0.064-1.92 0.192l-2.368-3.04c-0.192-0.24-0.544-0.288-0.784-0.096l-1.952 1.488c-0.24 0.192-0.288 0.544-0.096 0.784l2.368 3.024c-0.64 0.608-1.168 1.312-1.584 2.08l-2.384-3.024c-0.192-0.24-0.544-0.288-0.784-0.096l-1.952 1.488c-0.24 0.192-0.288 0.544-0.096 0.784l2.832 3.616c-0.4 0.928-0.624 1.952-0.624 3.024 0 4.416 3.584 8 8 8s8-3.584 8-8c0-1.072-0.224-2.096-0.624-3.024l2.832-3.616c0.192-0.24 0.144-0.592-0.096-0.784zM12 20c-2.208 0-4-1.792-4-4 0-2.208 1.792-4 4-4s4 1.792 4 4c0 2.208-1.792 4-4 4z"/>
                                 </svg>
@@ -195,8 +194,6 @@
                     </ul>
                 </div>
             </div>
-            
-            <!-- Copyright -->
             <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-500">
                 &copy; {{ date('Y') }} Cianjur Fresh. All rights reserved.
             </div>
