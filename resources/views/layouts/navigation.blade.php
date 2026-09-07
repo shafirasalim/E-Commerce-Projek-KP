@@ -43,7 +43,8 @@
 
                         <!-- TAMBAHKAN INI: Link Daftar Supplier (Desktop) -->
                         @if(Auth::check() && Auth::user()->role && Auth::user()->role->nama_role !== 'supplier')
-                            <x-dropdown-link :href="route('supplier.apply')" class="text-brand-600 font-medium">
+                            <x-dropdown-link :href="route('supplier.apply')" 
+                                class="{{ request()->routeIs('supplier.apply') ? 'text-brand-600' : 'text-gray-700' }}">
                                 {{ __('Daftar Supplier') }}
                             </x-dropdown-link>
                             <div class="border-t border-gray-200"></div>

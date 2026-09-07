@@ -62,11 +62,11 @@
                             <a href="{{ route('orders.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Pesanan Saya</a>
                             <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Pengaturan Akun</a>
                             
-                            <!-- === TAMBAHKAN INI: Link Daftar Supplier (Desktop) === -->
                             @if(Auth::check() && Auth::user()->role && Auth::user()->role->nama_role !== 'supplier')
-                                <a href="{{ route('supplier.apply') }}" class="block px-4 py-2 text-sm text-brand-600 hover:bg-gray-100">
-                                    Daftar Supplier
-                                </a>
+                            <a href="{{ route('supplier.apply') }}" 
+                            class="block px-4 py-2 text-sm {{ request()->routeIs('supplier.apply') ? 'text-brand-600' : 'text-gray-700 hover:bg-gray-100' }}">
+                                Daftar Supplier
+                            </a>
                                 <div class="border-t border-gray-200 my-1"></div>
                             @endif
                             <!-- ===================================================== -->
@@ -102,11 +102,11 @@
                 
                 <!-- === TAMBAHKAN INI: Link Daftar Supplier (Mobile) === -->
                 @if(Auth::check() && Auth::user()->role && Auth::user()->role->nama_role !== 'supplier')
-                    <a href="{{ route('supplier.apply') }}" class="block px-3 py-2 text-brand-600 hover:bg-brand-50 rounded font-medium">
-                        Daftar Supplier
-                    </a>
+                <a href="{{ route('supplier.apply') }}" 
+                class="block px-3 py-2 {{ request()->routeIs('supplier.apply') ? 'text-brand-600 bg-brand-50' : 'text-gray-600 hover:bg-brand-50' }} rounded">
+                    Daftar Supplier
+                </a>
                 @endif
-                <!-- ===================================================== -->
                 
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
