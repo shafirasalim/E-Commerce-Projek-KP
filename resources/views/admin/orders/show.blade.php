@@ -88,7 +88,7 @@
             <!-- Update Status -->
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Update Status</h3>
-                <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST">
+                <form action="{{ route('admin.orders.update-status', $order->id) }}" method="POST">
                     @csrf
                     @method('PATCH')
                     <div class="mb-4">
