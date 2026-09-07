@@ -60,9 +60,16 @@
                         <div x-show="open" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50" style="display: none;">
                             <a href="{{ route('home') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Beranda</a>
                             <a href="{{ route('orders.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Pesanan Saya</a>
-                            
-                            <!-- Tambahan: Pengaturan Akun -->
                             <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Pengaturan Akun</a>
+                            
+                            <!-- === TAMBAHKAN INI: Link Daftar Supplier (Desktop) === -->
+                            @if(Auth::check() && Auth::user()->role && Auth::user()->role->nama_role !== 'supplier')
+                                <a href="{{ route('supplier.apply') }}" class="block px-4 py-2 text-sm text-brand-600 hover:bg-gray-100 font-medium">
+                                    Daftar Supplier
+                                </a>
+                                <div class="border-t border-gray-200 my-1"></div>
+                            @endif
+                            <!-- ===================================================== -->
                             
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
@@ -92,6 +99,15 @@
                 <a href="{{ route('cart.index') }}" class="block px-3 py-2 text-gray-600 hover:bg-brand-50 hover:text-brand-600 rounded">Keranjang</a>
                 <a href="{{ route('orders.index') }}" class="block px-3 py-2 text-gray-600 hover:bg-brand-50 hover:text-brand-600 rounded">Pesanan Saya</a>
                 <a href="{{ route('profile.edit') }}" class="block px-3 py-2 text-gray-600 hover:bg-brand-50 hover:text-brand-600 rounded">Pengaturan Akun</a>
+                
+                <!-- === TAMBAHKAN INI: Link Daftar Supplier (Mobile) === -->
+                @if(Auth::check() && Auth::user()->role && Auth::user()->role->nama_role !== 'supplier')
+                    <a href="{{ route('supplier.apply') }}" class="block px-3 py-2 text-brand-600 hover:bg-brand-50 rounded font-medium">
+                        Daftar Supplier
+                    </a>
+                @endif
+                <!-- ===================================================== -->
+                
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="block w-full text-left px-3 py-2 text-gray-600 hover:bg-brand-50 hover:text-brand-600 rounded">Logout</button>
