@@ -64,7 +64,7 @@
                             
                             <!-- === TAMBAHKAN INI: Link Daftar Supplier (Desktop) === -->
                             @if(Auth::check() && Auth::user()->role && Auth::user()->role->nama_role !== 'supplier')
-                                <a href="{{ route('supplier.apply') }}" class="block px-4 py-2 text-sm text-brand-600 hover:bg-gray-100 font-medium">
+                                <a href="{{ route('supplier.apply') }}" class="block px-4 py-2 text-sm text-brand-600 hover:bg-gray-100">
                                     Daftar Supplier
                                 </a>
                                 <div class="border-t border-gray-200 my-1"></div>
