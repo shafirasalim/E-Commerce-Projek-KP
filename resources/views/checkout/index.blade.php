@@ -51,19 +51,21 @@
                             <h2 class="text-xl font-bold text-gray-900 mb-6">Informasi Pengiriman</h2>
                             
                             <div class="space-y-4">
+                                <!-- 1. ALAMAT (DIPERBAIKI) -->
                                 <div>
                                     <label for="address" class="block text-sm font-medium text-gray-700 mb-2">Alamat Lengkap</label>
                                     <textarea id="address" name="address" rows="3" required
                                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500"
-                                        placeholder="Jl. Contoh No. 123, RT/RW 001/002">{{ old('address') }}</textarea>
+                                        placeholder="Jl. Contoh No. 123, RT/RW 001/002">{{ old('address', $user->address ?? '') }}</textarea>
                                     @error('address')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>
 
+                                <!-- 2. KOTA (DIPERBAIKI) -->
                                 <div>
                                     <label for="city" class="block text-sm font-medium text-gray-700 mb-2">Kota</label>
-                                    <input type="text" id="city" name="city" value="{{ old('city') }}" required
+                                    <input type="text" id="city" name="city" value="{{ old('city', $user->city ?? '') }}" required
                                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500"
                                         placeholder="Jakarta Selatan">
                                     @error('city')
@@ -71,9 +73,10 @@
                                     @enderror
                                 </div>
 
+                                <!-- 3. NOMOR TELEPON (DIPERBAIKI) -->
                                 <div>
                                     <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Nomor Telepon</label>
-                                    <input type="tel" id="phone" name="phone" value="{{ old('phone', Auth::user()->phone_number) }}" required
+                                    <input type="tel" id="phone" name="phone" value="{{ old('phone', $user->phone_number ?? '') }}" required
                                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500"
                                         placeholder="081234567890">
                                     @error('phone')
@@ -81,6 +84,7 @@
                                     @enderror
                                 </div>
 
+                                <!-- 4. CATATAN (TETAP SAMA) -->
                                 <div>
                                     <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">Catatan (Opsional)</label>
                                     <textarea id="notes" name="notes" rows="2"

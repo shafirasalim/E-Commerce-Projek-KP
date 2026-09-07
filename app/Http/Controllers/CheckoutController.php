@@ -43,51 +43,57 @@ class CheckoutController extends Controller
     /**
      * Tampilkan halaman checkout
      */
-    public function index(Request $request)
-    {
-        if (!Auth::check()) {
-            return redirect()->route('login')->with('info', 'Silakan login terlebih dahulu untuk melanjutkan checkout');
+        public function index(Request $request)
+        {
+            if (!Auth::check()) {
+                return redirect()->route('login')->with('info', 'Silakan login terlebih dahulu untuk melanjutkan checkout');
+            }
+
+            // Merge session cart ke database
+            $this->mergeSessionCart();
+
+            // === TAMBAHKAN INI: Ambil data user yang sedang login ===
+            $user = Auth::user();
+            // ==========================================================
+
+            // Cek apakah ini "Buy Now"
+            $buyNowItem = session()->get('buy_now');
+            
+            if ($buyNowItem) {
+                // Buy Now - hanya 1 item
+                $checkoutItems = collect([$buyNowItem]);
+                $total = $buyNowItem['price'] * $buyNowItem['quantity'];
+            } else {
+                // Checkout dari cart - ambil item yang dipilih
+                $selectedIds = $request->input('selected_items', []);
+                
+                if (empty($selectedIds)) {
+                    return redirect()->route('cart.index')->with('error', 'Pilih minimal 1 produk untuk checkout');
+                }
+
+                $cart = Cart::with(['items.product'])->where('user_id', Auth::id())->first();
+                
+                if (!$cart || $cart->items->isEmpty()) {
+                    return redirect()->route('cart.index')->with('error', 'Keranjang Anda kosong');
+                }
+
+                // Filter hanya item yang dipilih
+                $checkoutItems = $cart->items->whereIn('product_id', $selectedIds);
+                
+                if ($checkoutItems->isEmpty()) {
+                    return redirect()->route('cart.index')->with('error', 'Pilih minimal 1 produk untuk checkout');
+                }
+
+                // Hitung total
+                $total = $checkoutItems->sum(function($item) {
+                    return $item->price * $item->quantity;
+                });
+            }
+
+            // === UPDATE COMPACT: tambahkan 'user' ===
+            return view('checkout.index', compact('checkoutItems', 'total', 'buyNowItem', 'user'));
+            // =========================================
         }
-
-        // Merge session cart ke database
-        $this->mergeSessionCart();
-
-        // Cek apakah ini "Buy Now"
-        $buyNowItem = session()->get('buy_now');
-        
-        if ($buyNowItem) {
-            // Buy Now - hanya 1 item
-            $checkoutItems = collect([$buyNowItem]);
-            $total = $buyNowItem['price'] * $buyNowItem['quantity'];
-        } else {
-            // Checkout dari cart - ambil item yang dipilih
-            $selectedIds = $request->input('selected_items', []);
-            
-            if (empty($selectedIds)) {
-                return redirect()->route('cart.index')->with('error', 'Pilih minimal 1 produk untuk checkout');
-            }
-
-            $cart = Cart::with(['items.product'])->where('user_id', Auth::id())->first();
-            
-            if (!$cart || $cart->items->isEmpty()) {
-                return redirect()->route('cart.index')->with('error', 'Keranjang Anda kosong');
-            }
-
-            // Filter hanya item yang dipilih
-            $checkoutItems = $cart->items->whereIn('product_id', $selectedIds);
-            
-            if ($checkoutItems->isEmpty()) {
-                return redirect()->route('cart.index')->with('error', 'Pilih minimal 1 produk untuk checkout');
-            }
-
-            // Hitung total
-            $total = $checkoutItems->sum(function($item) {
-                return $item->price * $item->quantity;
-            });
-        }
-
-        return view('checkout.index', compact('checkoutItems', 'total', 'buyNowItem'));
-    }
 
     /**
      * Helper: Ambil data item (support array & object)
