@@ -40,7 +40,8 @@ class ReportController extends Controller
 
     private function getData(Request $request): array
     {
-        $from = $request->input('from', now()->startOfMonth()->toDateString());
+        // Default: dari awal tahun ini sampai hari ini
+        $from = $request->input('from', now()->startOfYear()->toDateString());
         $to   = $request->input('to', now()->toDateString());
 
         $transactions = Transaction::with(['user', 'details.product'])

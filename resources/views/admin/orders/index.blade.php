@@ -65,7 +65,7 @@
                                 <div class="text-sm text-gray-500">{{ $order->user->email ?? '-' }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                {{ $order->created_at->format('d M Y, H:i') }}
+                                {{ \Carbon\Carbon::parse($order->transaction_date)->format('d M Y') }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
                                 Rp {{ number_format($order->total_amount, 0, ',', '.') }}
@@ -79,7 +79,6 @@
                                         'cancelled' => 'bg-red-100 text-red-800',
                                     ];
                                     $statusLabels = [
-
                                         'paid' => 'Dibayar',
                                         'shipped' => 'Dikirim',
                                         'completed' => 'Selesai',
