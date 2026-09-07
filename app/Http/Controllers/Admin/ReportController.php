@@ -53,14 +53,15 @@ class ReportController extends Controller
 
     private function getSummary($transactions): array
     {
-        $paid = $transactions->where('status', 'paid');
+        // Ambil semua transaksi yang sudah bayar (paid, shipped, completed)
+        $paidTransactions = $transactions->whereIn('status', ['paid', 'shipped', 'completed']);
 
         return [
             'total_transaksi' => $transactions->count(),
-            'total_paid'      => $paid->count(),
+            'total_paid'      => $paidTransactions->count(),
             'total_pending'   => $transactions->where('status', 'pending')->count(),
-            'omzet'           => $paid->sum('total_amount'),
-            'produk_terjual'  => $paid->sum(fn ($t) => $t->details->sum('quantity')),
+            'omzet'           => $paidTransactions->sum('total_amount'),
+            'produk_terjual'  => $paidTransactions->sum(fn ($t) => $t->details->sum('quantity')),
         ];
     }
 
