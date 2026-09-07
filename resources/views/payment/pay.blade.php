@@ -19,15 +19,20 @@
         function openPayment() {
             snap.pay(snapToken, {
                 onSuccess: function (result) {
+                    // Pembayaran sukses (misal: GoPay/Qris langsung lunas)
                     window.location.href = successUrl;
                 },
                 onPending: function (result) {
-                    window.location.href = successUrl;
+                    // Pembayaran pending (misal: belum transfer VA)
+                    // Arahkan ke daftar pesanan agar user tau harus transfer
+                    window.location.href = ordersUrl;
                 },
                 onError: function (result) {
+                    // Pembayaran gagal/error
                     window.location.href = ordersUrl;
                 },
                 onClose: function () {
+                    // User menutup popup Midtrans secara manual
                     window.location.href = ordersUrl;
                 }
             });
@@ -35,8 +40,10 @@
 
         document.getElementById('pay-btn').addEventListener('click', openPayment);
 
-        // Otomatis buka popup saat halaman dimuat
-        openPayment();
+        // Otomatis buka popup saat halaman dimuat (dengan sedikit delay biar smooth)
+        setTimeout(function() {
+            openPayment();
+        }, 500);
     </script>
 
 </x-public-layout>

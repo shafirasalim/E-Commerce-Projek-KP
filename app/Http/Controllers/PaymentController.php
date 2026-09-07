@@ -109,13 +109,25 @@ class PaymentController extends Controller
     /**
      * Halaman sukses setelah bayar
      */
+        /**
+     * Halaman sukses setelah bayar
+     */
     public function success($transactionId)
     {
+        // Refresh data dari database untuk memastikan status terbaru
         $transaction = Transaction::findOrFail($transactionId);
 
         if ($transaction->user_id !== Auth::id()) {
-            abort(403);
+            abort(403, 'Akses ditolak');
         }
+
+        // === TAMBAHKAN CEK STATUS DI SINI ===
+        // Hanya tampilkan halaman sukses JIKA statusnya sudah 'paid' atau 'settlement'
+        if (!in_array($transaction->status, ['paid', 'settlement'])) {
+            return redirect()->route('orders.show', $transaction->id)
+                ->with('warning', 'Pembayaran Anda masih diproses atau belum selesai. Mohon tunggu konfirmasi dari sistem.');
+        }
+        // =====================================
 
         return view('payment.success', compact('transaction'));
     }
