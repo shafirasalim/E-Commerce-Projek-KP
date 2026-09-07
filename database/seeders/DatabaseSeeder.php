@@ -11,12 +11,11 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Roles
+
         $adminRole = Role::firstOrCreate(['nama_role' => 'admin']);
         $customerRole = Role::firstOrCreate(['nama_role' => 'customer']);
         $supplierRole = Role::firstOrCreate(['nama_role' => 'supplier']);
 
-        // Admin User
         User::updateOrCreate(
             ['email' => 'admin@ecommerce.com'],
             [
@@ -27,8 +26,6 @@ class DatabaseSeeder extends Seeder
                 'phone_number' => '081234567890',
             ]
         );
-
-        // Customer User (Test Account)
         User::updateOrCreate(
             ['email' => 'customer@test.com'],
             [
@@ -40,7 +37,18 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // Products
+        User::updateOrCreate(
+            ['email' => 'supplier@test.com'],
+            [
+                'role_id' => $supplierRole->id,
+                'name' => 'Test Supplier',
+                'email' => 'supplier@test.com',
+                'password' => Hash::make('password123'),
+                'phone_number' => '081234567892',
+            ]
+        );
         $this->call(ProductSeeder::class);
+
+        $this->call(TransactionSeeder::class);
     }
 }

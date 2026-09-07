@@ -2,74 +2,44 @@
 
 namespace Database\Seeders;
 
-use App\Models\Category;
 use App\Models\Product;
+use App\Models\Category;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class ProductSeeder extends Seeder
 {
-    public function run(): void
+    public function run()
     {
-        // Buat Kategori
-        $electronics = Category::create([
-            'name' => 'Elektronik',
-            'description' => 'Perangkat elektronik dan gadget'
-        ]);
+        // Pastikan ada kategori, kalau tidak ada buat dummy
+        $categories = Category::all();
+        if ($categories->isEmpty()) {
+            $cat1 = Category::create(['name' => 'Makanan']);
+            $cat2 = Category::create(['name' => 'Minuman']);
+            $categories = collect([$cat1, $cat2]);
+        }
 
-        $fashion = Category::create([
-            'name' => 'Fashion',
-            'description' => 'Pakaian dan aksesoris'
-        ]);
+        $productNames = [
+            'Kopi Arabika Cianjur', 'Teh Hijau Premium', 'Madu Hutan Asli', 'Beras Merah Organik',
+            'Gula Aren Cair', 'Keripik Singkong', 'Dodol Garut', 'Sirup Markisa',
+            'Selai Nanas', 'Kopi Robusta', 'Teh Celup Melati', 'Madu Murni 500ml',
+            'Beras Putih Premium', 'Gula Semut Aren', 'Keripik Pisang', 'Sale Pisang',
+            'Sirup Sirsak', 'Selai Stroberi', 'Kopi Luwak', 'Teh Oolong',
+            'Madu Kelengkeng', 'Beras Coklat', 'Gula Batu', 'Keripik Tempe',
+            'Dodol Kolang Kaling', 'Sirup Mangga', 'Selai Blueberry', 'Kopi Toraja',
+            'Teh Putih', 'Madu Trigona'
+        ];
 
-        $food = Category::create([
-            'name' => 'Makanan',
-            'description' => 'Makanan dan minuman'
-        ]);
-
-        // Buat Produk
-        Product::create([
-            'category_id' => $electronics->id,
-            'name' => 'Smartphone XYZ',
-            'description' => 'Smartphone dengan kamera 48MP dan baterai 5000mAh',
-            'price' => 3500000,
-            'stock' => 10,
-            'status' => 'active',
-        ]);
-
-        Product::create([
-            'category_id' => $electronics->id,
-            'name' => 'Laptop Gaming',
-            'description' => 'Laptop gaming dengan RTX 3060 dan RAM 16GB',
-            'price' => 12000000,
-            'stock' => 5,
-            'status' => 'active',
-        ]);
-
-        Product::create([
-            'category_id' => $fashion->id,
-            'name' => 'Kaos Polos Premium',
-            'description' => 'Kaos katun combed 30s, nyaman dipakai',
-            'price' => 85000,
-            'stock' => 50,
-            'status' => 'active',
-        ]);
-
-        Product::create([
-            'category_id' => $fashion->id,
-            'name' => 'Celana Jeans',
-            'description' => 'Celana jeans slim fit berkualitas',
-            'price' => 250000,
-            'stock' => 20,
-            'status' => 'active',
-        ]);
-
-        Product::create([
-            'category_id' => $food->id,
-            'name' => 'Keripik Singkong',
-            'description' => 'Keripik singkong balado pedas manis',
-            'price' => 15000,
-            'stock' => 100,
-            'status' => 'active',
-        ]);
+        foreach ($productNames as $index => $name) {
+            Product::create([
+                'name' => $name,
+                'category_id' => $categories->random()->id,
+                'price' => rand(15000, 150000),
+                'stock' => rand(10, 100),
+                'status' => 'active',
+                'description' => 'Deskripsi dummy untuk produk ' . $name . '. Produk berkualitas tinggi langsung dari petani lokal Cianjur.',
+                'image' => null, // Kosongkan dulu karena kita gak punya file gambar asli
+            ]);
+        }
     }
 }
