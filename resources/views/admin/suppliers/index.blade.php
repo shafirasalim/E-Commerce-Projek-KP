@@ -87,8 +87,15 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                @if($app->status === 'pending')
-                                    <div class="flex items-center space-x-2">
+                                <div class="flex items-center space-x-2">
+                                    <!-- Tombol Detail (Muncul di SEMUA status) -->
+                                    <a href="{{ route('admin.suppliers.show', $app->id) }}" 
+                                       class="text-blue-600 hover:text-blue-900 font-medium">
+                                        Detail
+                                    </a>
+                                    
+                                    <!-- Tombol Approve/Reject (Hanya muncul jika status pending) -->
+                                    @if($app->status === 'pending')
                                         <form action="{{ route('admin.suppliers.approve', $app->id) }}" method="POST" class="inline" onsubmit="return confirm('Setujui aplikasi supplier ini? Role user akan diubah menjadi Supplier.')">
                                             @csrf
                                             <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs font-medium transition">
@@ -102,12 +109,8 @@
                                                 ✗ Reject
                                             </button>
                                         </form>
-                                    </div>
-                                @else
-                                    <a href="{{ route('admin.suppliers.show', $app->id) }}" class="text-brand-600 hover:text-brand-900">
-                                        Detail
-                                    </a>
-                                @endif
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                     @empty
