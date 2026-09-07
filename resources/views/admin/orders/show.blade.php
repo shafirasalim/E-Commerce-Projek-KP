@@ -90,7 +90,7 @@
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Update Status</h3>
                 <form action="{{ route('admin.orders.update-status', $order->id) }}" method="POST">
                     @csrf
-                    @method('PATCH')
+                    {{-- @method('PATCH') SUDAH DIHAPUS --}}
                     <div class="mb-4">
                         <select name="status" class="block w-full px-4 py-3 rounded-lg border-gray-300 focus:border-brand-500 focus:ring-brand-500 shadow-sm">
                             <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Pending</option>
