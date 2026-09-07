@@ -226,7 +226,8 @@ class CheckoutController extends Controller
             return;
         }
 
-        $cart = Cart::firstOrCreate(['user_id', Auth::id()]);
+        // PERBAIKAN DI SINI: Gunakan '=>' bukan ','
+        $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
 
         foreach ($sessionCart as $productId => $item) {
             $product = Product::find($productId);
