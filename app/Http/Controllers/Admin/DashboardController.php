@@ -11,10 +11,13 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $totalRevenue = Transaction::where('status', '!=', 'cancelled')->sum('total_amount');
+        // HANYA hitung yang uangnya sudah masuk (paid, shipped, completed)
+        $totalRevenue = Transaction::whereIn('status', ['paid', 'shipped', 'completed'])->sum('total_amount');
+        
         $totalOrders = Transaction::count();
         $pendingOrders = Transaction::where('status', 'pending')->count();
         $totalProducts = Product::count();
+        
         $totalCustomers = User::whereHas('role', function($q) {
             $q->where('nama_role', 'customer');
         })->count();
